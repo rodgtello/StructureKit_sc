@@ -174,6 +174,8 @@ public class STKMetalRenderer: NSObject, STKRenderer {
   private var _commandBuffer: MTLCommandBuffer?
   private var _currentDrawable: CAMetalDrawable?
 
+  private var _scale: CGFloat = UIScreen.main.scale
+
   // projection
   private var projection: float4x4 { colorCameraGLProjectionMatrix }
   private var frameRatio: Float {
@@ -182,8 +184,7 @@ public class STKMetalRenderer: NSObject, STKRenderer {
   private var viewport: MTLViewport {
     let z = (near: 0.0, far: 1.0)
     let frame = _mtkView.bounds.size
-    let sc: CGFloat = UIScreen.main.scale
-    let screen = simd_float2(x: Float(frame.width * sc), y: Float(frame.height * sc))
+    let screen = simd_float2(x: Float(frame.width * _scale), y: Float(frame.height * _scale))
 
     let isPortraitOrientation = frame.height > frame.width
     if isPortraitOrientation {
@@ -228,6 +229,10 @@ public class STKMetalRenderer: NSObject, STKRenderer {
   public func setColorFrame(_ colorFrame: STKColorFrame) {
     _colorFrameRenderer.uploadColorTexture(colorFrame)
     colorCameraGLProjectionMatrix = float4x4(colorFrame.glProjectionMatrix())
+  }
+
+  public func setScale(_ scale: CGFloat) {
+    _scale = scale
   }
 
   public func setScanningMesh(_ mesh: STKMesh) { _scanMesh.updateMesh(mesh) }
